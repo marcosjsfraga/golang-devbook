@@ -21,8 +21,8 @@ func (repo Repo) Criar(usuario models.Usuario) (uint64, error) {
 
 	statement, err := repo.db.Prepare(
 		`INSERT INTO usuarios 
-		(nome, nick, email, senha) VALUES 
-		($1, $2, $3, $4)`)
+		 (nome, nick, email, senha) VALUES 
+		 ($1, $2, $3, $4)`)
 
 	if err != nil {
 		return 0, err
@@ -115,8 +115,8 @@ func (repo Repo) Alterar(ID uint64, usuario models.Usuario) error {
 
 	statement, err := repo.db.Prepare(
 		`UPDATE usuarios 
-		SET nome=$1, nick=$2, email=$3, senha=$4 
-		WHERE id=$5`)
+ 	 	 SET nome=$1, nick=$2, email=$3, senha=$4 
+		 WHERE id=$5`)
 	if err != nil {
 		return err
 	}
@@ -147,4 +147,28 @@ func (repo Repo) Deletar(ID uint64) error {
 	}
 
 	return nil
+}
+
+// BuscarPorEmail retorna id e senha com hash de um usuário
+func (repo Repo) BuscarPorEmail(email string) (models.Usuario, error) {
+
+	linha, err := repo.db.Query(
+		`SELECT id, senha 
+		 FROM usuarios 
+		 WHERE email = $1`,
+		email)
+	if err != nil {
+		return models.Usuario{}, err
+	}
+	defer linha.Close()
+
+	var usuario models.Usuario
+
+	if linha.Next() {
+		if err = linha.Scan(&usuario.ID, &usuario.Senha); err != nil {
+			return models.Usuario{}, err
+		}
+	}
+
+	return usuario, nil
 }

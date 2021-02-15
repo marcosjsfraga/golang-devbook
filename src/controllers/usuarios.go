@@ -34,11 +34,13 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Abrir conexão com o banco de dados
 	db, err := database.Conectar()
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
+	// Fechar a coenxão no final da chamada desta função
 	defer db.Close()
 
 	repositorio := repositories.NovoRepositorioDeUsuarios(db)
