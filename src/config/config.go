@@ -9,10 +9,13 @@ import (
 )
 
 var (
-	// StringConexaoBanco strgin de coenxão com o Postgres
+	// StringConexaoBanco strign de conexão com o Postgres
 	StringConexaoBanco = ""
 	// Porta APIS
 	Porta = 0
+
+	//SecretKey chave usada para assinar o token
+	SecretKey []byte
 )
 
 // Carregar inicializar variaveis de ambiente
@@ -27,5 +30,7 @@ func Carregar() {
 	if err != nil {
 		Porta = 9000
 	}
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 
 }
