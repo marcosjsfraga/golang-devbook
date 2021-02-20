@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/auth"
 	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/response"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -120,6 +122,17 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usuarioIDNoToken, err := auth.ExtrairUsuarioID(r)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if usuarioID != usuarioIDNoToken {
+		response.Error(w, http.StatusForbidden, errors.New("You can't update another user"))
+		return
+	}
+
 	// Ler as variáveis do cropo da requisição
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -163,6 +176,17 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 	usuarioID, err := strconv.ParseUint(parametros["usuarioId"], 10, 64)
 	if err != nil {
 		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	usuarioIDNoToken, err := auth.ExtrairUsuarioID(r)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if usuarioID != usuarioIDNoToken {
+		response.Error(w, http.StatusForbidden, errors.New("You can't delete another user"))
 		return
 	}
 

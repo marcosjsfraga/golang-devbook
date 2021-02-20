@@ -42,6 +42,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("** Logged User: ", usuarioSalvoBanco.ID, usuarioSalvoBanco.Nome)
+
 	if err = security.VerificarSenha(usuarioSalvoBanco.Senha, usuario.Senha); err != nil {
 		response.Error(w, http.StatusUnauthorized, err)
 		return
@@ -52,7 +54,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println("\nToken: ", token)
 
-	w.Write([]byte("Usuário autorizado"))
+	w.Write([]byte(token))
 }
